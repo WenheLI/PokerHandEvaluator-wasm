@@ -4,7 +4,7 @@
   "description": "WebAssembly port of PokerHandEvaluator for fast poker hand evaluation",
   "main": "lib/phevaluator.js",
   "scripts": {
-    "build": "source $EMSDK/emsdk_env.sh && emcmake cmake . && emmake make",
+    "build": "emcmake cmake . && emmake make",
     "test": "jest",
     "start": "node server.js",
     "prepublishOnly": "npm run build",
