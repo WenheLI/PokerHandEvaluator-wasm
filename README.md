@@ -15,9 +15,21 @@ A WebAssembly port of [Henry Lee's PokerHandEvaluator](https://github.com/HenryR
 
 ## Getting Started
 
-### Clone the Repository
+### Installation
 
-This repository uses the original PokerHandEvaluator as a Git submodule. Use the following command to clone it with all submodules:
+You can install the prebuilt package directly from npm:
+
+```bash
+npm install poker-hand-evaluator-wasm
+```
+
+The npm package includes all the compiled WebAssembly files and JavaScript wrappers needed to use the library. No additional build steps are required for end-users.
+
+### For Developers: Cloning the Repository
+
+This repository uses the original PokerHandEvaluator as a Git submodule. Use one of the following approaches:
+
+#### Option 1: Clone with submodules (recommended for development)
 
 ```bash
 # Clone the repository with submodules
@@ -25,12 +37,18 @@ git clone --recurse-submodules https://github.com/WenheLI/PokerHandEvaluator-was
 cd PokerHandEvaluator-wasm
 ```
 
-If you already cloned the repository without the `--recurse-submodules` flag, you can initialize and update the submodule with:
+#### Option 2: Clone and then initialize submodules
+
+If you already cloned the repository without the `--recurse-submodules` flag:
 
 ```bash
+git clone https://github.com/WenheLI/PokerHandEvaluator-wasm.git
+cd PokerHandEvaluator-wasm
 git submodule init
 git submodule update
 ```
+
+> **Important**: The Git submodules are only needed if you're building from source or contributing to development. If you're just using the npm package, you don't need to worry about Git submodules.
 
 ## Building
 
@@ -53,55 +71,85 @@ This will generate `phevaluator.js` and `phevaluator.wasm` files in the `dist` d
 
 ```javascript
 // Install the package
-// npm install phevaluator-wasm
+// npm install poker-hand-evaluator-wasm
 
-const PokerHandEvaluator = require('phevaluator-wasm');
+const PHEvaluator = require('poker-hand-evaluator-wasm');
 
-// Load the module asynchronously
-PokerHandEvaluator().then(module => {
-    // Evaluate a 5-card hand using card IDs
-    // Card IDs: rank * 4 + suit (0:clubs, 1:diamonds, 2:hearts, 3:spades)
-    const Ah = new module.Card(51);
-    const Kh = new module.Card(47);
-    const Qh = new module.Card(43);
-    const Jh = new module.Card(39);
-    const Th = new module.Card(35);
-    
-    const royalFlushHand = module.evaluate5(Ah, Kh, Qh, Jh, Th); // Royal Flush
-    console.log("Royal Flush:", royalFlushHand.toString()); // "Straight Flush (Score: 1)"
-    console.log("Hand Category:", royalFlushHand.categoryName()); // "Straight Flush"
-    console.log("Category Value:", royalFlushHand.category); // 9
-    console.log("Hand Score:", royalFlushHand.value); // 1
-    
-    // Evaluate using string notation
-    const straightFlushHand = module.evaluate7FromStrings("Ah", "Kh", "Qh", "Jh", "Th", "9h", "8h");
-    console.log("Straight Flush:", straightFlushHand.toString());
-    
-    // Evaluate a 6-card hand
-    const sixCardHand = module.evaluate6FromStrings("Ah", "Kh", "Qh", "Jh", "Th", "9h");
-    console.log("Six-card hand:", sixCardHand.toString());
-    
-    // Evaluate Omaha hand (4 hole cards, 5 community cards)
-    // Community cards: Ah, Kh, Qh, Jd, 2c
-    // Hole cards: Th, 9h, 3c, 4d
-    const omahaHand = module.evaluateOmahaFromStrings(
-        "Ah", "Kh", "Qh", "Jd", "2c",  // Community cards
-        "Th", "9h", "3c", "4d"         // Hole cards
-    );
-    console.log("Omaha Hand:", omahaHand.toString());
-    
-    // Compare two hands (lower score is better)
-    const hand1 = module.evaluate5FromStrings("Ah", "Kh", "Qh", "Jh", "Th"); // Royal Flush
-    const hand2 = module.evaluate5FromStrings("As", "Ks", "Qs", "Js", "Ts"); // Royal Flush (different suit)
-    const hand3 = module.evaluate5FromStrings("Ah", "Ad", "Ac", "As", "Kh"); // Four of a Kind
-    
-    if (hand1.value === hand2.value) {
-        console.log("Hand 1 and Hand 2 are equal in strength");
-    } else if (hand1.value < hand2.value) {
-        console.log("Hand 1 is stronger than Hand 2");
-    } else {
-        console.log("Hand 2 is stronger than Hand 1");
-    }
+// Option 1: Using the simplified API (auto-initialization)
+// The module is automatically initialized when required
+// All API methods will throw if used before initialization completes
+
+try {
+  // Evaluate a hand directly (will throw if module is not ready yet)
+  const result = PHEvaluator.evaluate(['As', 'Kh', 'Qd', 'Jc', '10s']);
+  console.log("Royal Flush:", result.toString());
+} catch (error) {
+  console.error("Module not ready yet:", error.message);
+}
+
+// Option 2: Using async/await with the ready() method (recommended)
+async function evaluateHands() {
+  // Wait for the module to be fully initialized
+  await PHEvaluator.ready();
+  
+  // Now safely use any of the module's functions
+  const royalFlushHand = PHEvaluator.evaluate(['As', 'Kh', 'Qd', 'Jc', '10s']); // Royal Flush
+  console.log("Royal Flush:", royalFlushHand.toString()); // "Straight Flush (Score: 1)"
+  console.log("Hand Category:", royalFlushHand.categoryName()); // "Straight Flush"
+  console.log("Category Value:", royalFlushHand.category); // 9
+  console.log("Hand Score:", royalFlushHand.value); // 1
+  
+  // Evaluate using specific evaluator functions
+  const straightFlushHand = PHEvaluator.evaluate7('Ah', 'Kh', 'Qh', 'Jh', 'Th', '9h', '8h');
+  console.log("Straight Flush:", straightFlushHand.toString());
+  
+  // Evaluate a 6-card hand
+  const sixCardHand = PHEvaluator.evaluate6('Ah', 'Kh', 'Qh', 'Jh', 'Th', '9h');
+  console.log("Six-card hand:", sixCardHand.toString());
+  
+  // Evaluate Omaha hand (4 hole cards, 5 community cards)
+  const omahaHand = PHEvaluator.evaluateOmaha(
+      'Ah', 'Kh', 'Qh', 'Jd', '2c',  // Community cards
+      'Th', '9h', '3c', '4d'         // Hole cards
+  );
+  console.log("Omaha Hand:", omahaHand.toString());
+  
+  // Compare two hands (lower score is better)
+  const hand1 = PHEvaluator.evaluate5('Ah', 'Kh', 'Qh', 'Jh', 'Th'); // Royal Flush
+  const hand2 = PHEvaluator.evaluate5('As', 'Ks', 'Qs', 'Js', 'Ts'); // Royal Flush (different suit)
+  const hand3 = PHEvaluator.evaluate5('Ah', 'Ad', 'Ac', 'As', 'Kh'); // Four of a Kind
+  
+  if (hand1.value === hand2.value) {
+      console.log("Hand 1 and Hand 2 are equal in strength");
+  } else if (hand1.value < hand2.value) {
+      console.log("Hand 1 is stronger than Hand 2");
+  } else {
+      console.log("Hand 2 is stronger than Hand 1");
+  }
+}
+
+evaluateHands().catch(console.error);
+
+// Option 3: Using the traditional Promise API
+PHEvaluator.ready().then(function() {
+  const hand = PHEvaluator.evaluate(['As', 'Ks', 'Qs', 'Js', 'Ts']);
+  console.log("Royal Flush:", hand.toString());
+}).catch(console.error);
+
+// Option 4: Check if the module is already initialized
+if (PHEvaluator.isReady()) {
+  // Safe to use synchronously if already initialized
+  const hand = PHEvaluator.evaluate(['As', 'Ks', 'Qs', 'Js', 'Ts']);
+  console.log(hand.toString());
+}
+
+// Option 5: Access the raw WebAssembly module directly (advanced usage)
+PHEvaluator.ready().then(function() {
+  const rawModule = PHEvaluator.getRawModule();
+  // Use the raw module API directly
+  const Ah = new rawModule.Card(51);
+  const Kh = new rawModule.Card(47);
+
 });
 ```
 
@@ -155,17 +203,7 @@ Examples: "Ah" (Ace of hearts), "Kd" (King of diamonds), "2c" (Two of clubs)
 
 ## Demos & Examples
 
-- `examples/demo.html` - Interactive web demo for evaluating poker hands
-- `examples/example.js` - Example usage in Node.js
-- `test.js` - Test suite for the WASM module
-
-To run the web demo:
-
-```bash
-node server.js
-```
-
-Then open your browser to http://localhost:8080/
+See the file in example folder
 
 ## Project Structure
 
@@ -183,58 +221,6 @@ Then open your browser to http://localhost:8080/
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-
-### Development
-
-1. Clone the repository with submodules:
-   ```bash
-   git clone --recurse-submodules https://github.com/WenheLI/PokerHandEvaluator-wasm.git
-   cd PokerHandEvaluator-wasm
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Build the WebAssembly module:
-   ```bash
-   npm run build
-   ```
-
-4. Run tests:
-   ```bash
-   npm test
-   ```
-
-### Release Process
-
-This project uses GitHub Actions for automated testing and publishing to npm.
-
-#### Manual Release
-
-1. Update the version in package.json using one of the version scripts:
-   ```bash
-   npm run version:patch   # 0.1.0 -> 0.1.1
-   npm run version:minor   # 0.1.0 -> 0.2.0
-   npm run version:major   # 0.1.0 -> 1.0.0
-   ```
-
-2. Push the new version tag to GitHub:
-   ```bash
-   git push --follow-tags
-   ```
-
-3. Create a new release on GitHub with the same version tag
-
-4. The GitHub Actions workflow will automatically build and publish the package to npm
-
-#### Automated Release via GitHub
-
-1. Go to your GitHub repository's Actions tab
-2. Select the "Publish to NPM" workflow
-3. Click "Run workflow"
-4. The workflow will automatically build, test, and publish the package to npm
 
 ## License
 
