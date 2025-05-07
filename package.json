@@ -23,6 +23,9 @@
     "texas-holdem",
     "omaha"
   ],
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "author": "Wenhe Li <wenhe.li98@gmail.com>",
   "license": "Apache-2.0",
   "repository": {
