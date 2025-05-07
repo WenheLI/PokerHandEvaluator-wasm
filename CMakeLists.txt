@@ -4,11 +4,15 @@ project(PokerHandEvaluator-wasm)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Set output directory for compiled files
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/dist)
+
 # Include Emscripten tools
 include(${CMAKE_ROOT}/Modules/FetchContent.cmake)
 
 # Source files from original project needed for the WASM port
 set(SOURCES
+    # C implementation files
     PokerHandEvaluator/cpp/src/hashtable5.c
     PokerHandEvaluator/cpp/src/hashtable6.c
     PokerHandEvaluator/cpp/src/hashtable7.c
@@ -21,6 +25,13 @@ set(SOURCES
     PokerHandEvaluator/cpp/src/evaluator7.c
     PokerHandEvaluator/cpp/src/hash.c
     PokerHandEvaluator/cpp/src/hashtable.c
+    
+    # C++ implementation files
+    PokerHandEvaluator/cpp/src/evaluator5.cc
+    PokerHandEvaluator/cpp/src/evaluator6.cc
+    PokerHandEvaluator/cpp/src/evaluator7.cc
+    PokerHandEvaluator/cpp/src/card_sampler.cc
+    
     src/phevaluator_wasm.cpp
 )
 

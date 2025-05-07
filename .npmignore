@@ -1,0 +1,29 @@
+# Development files
+.git/
+.github/
+.vscode/
+.gitignore
+.gitmodules
+
+# Build artifacts
+CMakeFiles/
+build/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Source files (since we're distributing the compiled output)
+src/
+PokerHandEvaluator/
+
+# CI/CD
+.travis.yml
+.github/
+
+# Tests
+__tests__/
+jest.config.js
+
+# Misc
+*.log
+node_modules/ 

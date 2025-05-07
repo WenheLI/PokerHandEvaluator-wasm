@@ -1,13 +1,18 @@
 {
   "name": "phevaluator-wasm",
-  "version": "1.0.0",
-  "description": "WebAssembly port of PokerHandEvaluator",
-  "main": "phevaluator.js",
+  "version": "0.1.0",
+  "description": "WebAssembly port of PokerHandEvaluator for fast poker hand evaluation",
+  "main": "lib/phevaluator.js",
   "scripts": {
     "build": "source $EMSDK/emsdk_env.sh && emcmake cmake . && emmake make",
-    "test": "node test.js",
+    "test": "jest",
     "start": "node server.js",
-    "postinstall": "git submodule update --init --recursive"
+    "prepublishOnly": "npm run build",
+    "postinstall": "git submodule update --init --recursive",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major",
+    "release": "npm run build && npm test && npm publish"
   },
   "keywords": [
     "poker",
@@ -18,17 +23,28 @@
     "texas-holdem",
     "omaha"
   ],
-  "author": "",
+  "author": "Wenhe Li <wenhe.li98@gmail.com>",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YourUsername/PokerHandEvaluator-wasm.git"
+    "url": "git+https://github.com/WenheLI/PokerHandEvaluator-wasm.git"
   },
   "bugs": {
-    "url": "https://github.com/YourUsername/PokerHandEvaluator-wasm/issues"
+    "url": "https://github.com/WenheLI/PokerHandEvaluator-wasm/issues"
   },
-  "homepage": "https://github.com/YourUsername/PokerHandEvaluator-wasm#readme",
+  "homepage": "https://github.com/WenheLI/PokerHandEvaluator-wasm#readme",
   "engines": {
     "node": ">=12.0.0"
+  },
+  "types": "./dist/phevaluator.d.ts",
+  "files": [
+    "dist/",
+    "lib/",
+    "examples/",
+    "README.md",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
-} 
+}
