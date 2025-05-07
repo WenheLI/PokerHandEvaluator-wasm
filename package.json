@@ -1,0 +1,34 @@
+{
+  "name": "phevaluator-wasm",
+  "version": "1.0.0",
+  "description": "WebAssembly port of PokerHandEvaluator",
+  "main": "phevaluator.js",
+  "scripts": {
+    "build": "source $EMSDK/emsdk_env.sh && emcmake cmake . && emmake make",
+    "test": "node test.js",
+    "start": "node server.js",
+    "postinstall": "git submodule update --init --recursive"
+  },
+  "keywords": [
+    "poker",
+    "evaluator",
+    "wasm",
+    "webassembly",
+    "poker-hand",
+    "texas-holdem",
+    "omaha"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YourUsername/PokerHandEvaluator-wasm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/YourUsername/PokerHandEvaluator-wasm/issues"
+  },
+  "homepage": "https://github.com/YourUsername/PokerHandEvaluator-wasm#readme",
+  "engines": {
+    "node": ">=12.0.0"
+  }
+} 
