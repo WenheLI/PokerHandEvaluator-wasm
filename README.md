@@ -69,6 +69,10 @@ This will generate `phevaluator.js` and `phevaluator.wasm` files in the `dist` d
 
 ### In Node.js
 
+You can import the module using either CommonJS or ES Modules.
+
+#### CommonJS (require)
+
 ```javascript
 // Install the package
 // npm install poker-hand-evaluator-wasm
@@ -151,6 +155,41 @@ PHEvaluator.ready().then(function() {
   const Kh = new rawModule.Card(47);
 
 });
+```
+
+#### ES Modules (import)
+
+```javascript
+// Install the package
+// npm install poker-hand-evaluator-wasm
+
+import PHEvaluator from 'poker-hand-evaluator-wasm';
+// You can also import the factory function directly if needed
+// import PHEvaluator, { PokerHandEvaluatorWasmFactory } from 'poker-hand-evaluator-wasm';
+
+// Option 1: Using the simplified API (auto-initialization)
+// The module is automatically initialized when imported
+// All API methods will throw if used before initialization completes
+
+try {
+  // Evaluate a hand directly (will throw if module is not ready yet)
+  const result = PHEvaluator.evaluate(['As', 'Kh', 'Qd', 'Jc', '10s']);
+  console.log("Royal Flush:", result.toString());
+} catch (error) {
+  console.error("Module not ready yet:", error.message);
+}
+
+// Option 2: Using async/await with the ready() method (recommended)
+async function evaluateHands() {
+  // Wait for the module to be fully initialized
+  await PHEvaluator.ready();
+  
+  // Now safely use any of the module's functions
+  const royalFlushHand = PHEvaluator.evaluate(['As', 'Ks', 'Qs', 'Js', 'Ts']); // Royal Flush
+  console.log("Royal Flush:", royalFlushHand.toString());
+}
+
+evaluateHands().catch(console.error);
 ```
 
 ## API Reference

@@ -3,6 +3,13 @@
   "version": "0.2.0",
   "description": "WebAssembly port of PokerHandEvaluator for fast poker hand evaluation",
   "main": "lib/phevaluator.js",
+  "type": "commonjs",
+  "exports": {
+    ".": {
+      "import": "./lib/phevaluator.mjs",
+      "require": "./lib/phevaluator.js"
+    }
+  },
   "scripts": {
     "build": "emcmake cmake . && emmake make",
     "test": "jest",
