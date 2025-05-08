@@ -1,6 +1,6 @@
 {
   "name": "poker-hand-evaluator-wasm",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "WebAssembly port of PokerHandEvaluator for fast poker hand evaluation",
   "main": "lib/phevaluator.js",
   "type": "commonjs",
